@@ -11,8 +11,6 @@ import scrapy
 class MeiziItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    title = scrapy.Field()  # 图片分类
     tags = scrapy.Field()  # 图片标签
-    url = scrapy.Field()  # 图片网址
     image_urls = scrapy.Field()  # 图片地址
-    image = scrapy.Field()  # 图片
+    images = scrapy.Field()  # 图片
