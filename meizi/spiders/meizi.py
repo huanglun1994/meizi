@@ -8,7 +8,7 @@ from meizi.items import MeiziItem
 
 class MeiziSpider(scrapy.Spider):
     name = 'meizi'  # 爬虫名，name是必要参数
-    allowed_domains = ['http://www.meizitu.com/a/']  # 爬虫的爬取范围
+    allowed_domains = ['meizitu.com']  # 爬虫的爬取范围
     start_urls = ['http://www.meizitu.com/a/more_1.html']  # 爬虫的起始网址
 
     def parse(self, response):
@@ -24,8 +24,8 @@ class MeiziSpider(scrapy.Spider):
 
         # 连接到下一页，此处需使用css选择器，xpath暂未找到选择下一兄弟节点的方法
         next_page = response.css('div#wp_page_numbers ul li.thisclass + li a::attr(href)').extract_first()
-        if next_page is not None:
-            request_next = scrapy.Request('http://www.meizitu.com/a/%s' % next_page, self.parse)
+        if next_page:
+            request_next = scrapy.Request('http://www.meizitu.com/a/%s' % next_page, callback=self.parse)
             yield request_next
 
     def parse_image(self, response):
@@ -40,4 +40,4 @@ class MeiziSpider(scrapy.Spider):
 
         item['tags'] = tags
         item['image_urls'] = image_urls
-        yield item
+        return item
