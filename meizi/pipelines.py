@@ -11,13 +11,14 @@ import os
 
 class MeiziPipeline(object):
     def process_item(self, item, spider):
-        fold_name = item['tags']
+        fold_name = item['tags']  # 图片文件夹名，以图片标签分类
         images = []
         dir_path = '%s/%s' % (settings.IMAGES_STORE, fold_name)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
+
         for image_url in item['image_urls']:
-            image_name = '-'.join(image_url.split('/')[-3:])
+            image_name = '-'.join(image_url.split('/')[-3:])  # 图片名
             image_path = '%s/%s' % (dir_path, image_name)
             images.append(image_path)
 
