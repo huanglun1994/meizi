@@ -26,8 +26,7 @@ class MeiziSpider(scrapy.Spider):
 
         # 如果有下一页，则回调parse
         if next_page:
-            request_next = scrapy.Request('http://www.meizitu.com/a/%s' % next_page, callback=self.parse)
-            yield request_next
+            yield scrapy.Request('http://www.meizitu.com/a/%s' % next_page, callback=self.parse)
 
     def parse_image(self, response):
         """
