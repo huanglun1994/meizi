@@ -9,7 +9,7 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'meizi'
+BOT_NAME = 'meizi'  # 爬虫名
 
 SPIDER_MODULES = ['meizi.spiders']
 NEWSPIDER_MODULE = 'meizi.spiders'

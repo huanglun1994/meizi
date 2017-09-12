@@ -16,8 +16,9 @@ class MeiziSpider(scrapy.Spider):
         # 使用xpath选择器进行标签选择，也可以使用css选择器
         # 链接到图片详情页面
         for link in sel.xpath("//h3[@class='tit']/a/@href").extract():
-            request = scrapy.Request(link, callback=self.parse_image)
-            yield request
+            if link:
+                request = scrapy.Request(link, callback=self.parse_image)
+                yield request
         #for link in sel.css("h3.tit a::attr(href)").extract():
         #    request = scrapy.Request(link, callback=self.parse_image)
         #    yield request
@@ -29,15 +30,19 @@ class MeiziSpider(scrapy.Spider):
             yield request_next
 
     def parse_image(self, response):
-        """将选取的节点传入Item对应的数据项中"""
+        """
+        将数据传入item
+        :param response: 
+        :return: 
+        """
         item = MeiziItem()
         sel = Selector(response)
 
-        tags = sel.xpath("//meta[@name='keywords']/@content").extract()
-        #tags = sel.css("meta[name='keywords']::attr(content)").extract()
-        image_urls = sel.xpath("//div[@id='picture']/p/img/@src").extract()
+        tags = sel.xpath("//meta[@name='keywords']/@content").extract_first().strip()  # 图片标签
+        #tags = sel.css("meta[name='keywords']::attr(content)").extract().strip()
+        image_urls = sel.xpath("//div[@id='picture']/p/img/@src").extract()  # 图片链接
         #image_urls = sel.css("div#picture p img::attr(src)").extract()
 
         item['tags'] = tags
         item['image_urls'] = image_urls
-        return item
+        yield item
