@@ -8,7 +8,7 @@ from meizi.items import MeiziItem
 
 class MeiziSpider(scrapy.Spider):
     name = 'meizi'  # 爬虫名，name是必要参数
-    allowed_domains = ['meizitu.com']  # 爬虫的爬取范围
+    allowed_domains = ['http://www.meizitu.com/a/']  # 爬虫的爬取范围
     start_urls = ['http://www.meizitu.com/a/more_1.html']  # 爬虫的起始网址
 
     def parse(self, response):
