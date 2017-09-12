@@ -36,7 +36,7 @@ class MeiziPipeline(ImagesPipeline):
     def file_path(self, request, response=None, info=None):
         item = request.meta['item']
         image_guid = '_'.join(request.url.split('/')[-3:])  # 图片的保存名
-        fold_name = strip(item['tags'].strip())  # 文件夹名
+        fold_name = strip(item['tags'])  # 文件夹名
         fold_path = u'{0}/{1}'.format(IMAGES_STORE, fold_name)  # 完整路径
         if not os.path.exists(fold_path):
             os.makedirs(fold_path)
