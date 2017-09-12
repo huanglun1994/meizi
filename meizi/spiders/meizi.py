@@ -14,17 +14,17 @@ class MeiziSpider(scrapy.Spider):
     def parse(self, response):
         sel = Selector(response)
         # 使用xpath选择器进行标签选择，也可以使用css选择器
-        # 链接到图片详情页面
-        for link in sel.xpath("//h3[@class='tit']/a/@href").extract():
-            if link:
-                request = scrapy.Request(link, callback=self.parse_image)
-                yield request
-        #for link in sel.css("h3.tit a::attr(href)").extract():
-        #    request = scrapy.Request(link, callback=self.parse_image)
-        #    yield request
+        # 链接到图片详情页面，调用parse_image
+        links = sel.xpath("//h3[@class='tit']/a/@href").extract()
+        if links:
+            for link in links:
+                yield scrapy.Request(link, callback=self.parse_image)
+        # links = sel.css("h3.tit a::attr(href)").extract()
 
         # 连接到下一页，此处需使用css选择器，xpath暂未找到选择下一兄弟节点的方法
         next_page = response.css('div#wp_page_numbers ul li.thisclass + li a::attr(href)').extract_first()
+
+        # 如果有下一页，则回调parse
         if next_page:
             request_next = scrapy.Request('http://www.meizitu.com/a/%s' % next_page, callback=self.parse)
             yield request_next
@@ -39,10 +39,11 @@ class MeiziSpider(scrapy.Spider):
         sel = Selector(response)
 
         tags = sel.xpath("//meta[@name='keywords']/@content").extract_first().strip()  # 图片标签
-        #tags = sel.css("meta[name='keywords']::attr(content)").extract().strip()
+        # tags = sel.css("meta[name='keywords']::attr(content)").extract().strip()
         image_urls = sel.xpath("//div[@id='picture']/p/img/@src").extract()  # 图片链接
-        #image_urls = sel.css("div#picture p img::attr(src)").extract()
+        # image_urls = sel.css("div#picture p img::attr(src)").extract()
 
+        # 将tags，image_urls存入item中
         item['tags'] = tags
         item['image_urls'] = image_urls
         yield item

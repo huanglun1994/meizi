@@ -8,6 +8,8 @@ from scrapy.pipelines.images import ImagesPipeline
 from scrapy.http import Request
 from scrapy.exceptions import DropItem
 import re
+import os
+from meizi.settings import IMAGES_STORE
 
 
 def strip(path):
@@ -15,7 +17,7 @@ def strip(path):
     :param path: 需要清洗的文件夹名字
     :return: 清洗掉Windows系统非法文件夹名字的字符串
     """
-    path = re.sub(r'[/\\:*?"<>|]', '', str(path))
+    path = re.sub(r'[/\\:*?"<>|]', '', str(path))  # Windows的文件名非法字符有：/\\:*?"<>|
     return path
 
 
@@ -23,7 +25,7 @@ class MeiziPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:
-            yield Request(image_url, meta={'item': item})
+            yield Request(image_url, meta={'item': item})  # 传入item，分类文件夹时需要用到
 
     def item_completed(self, results, item, info):
         image_paths = [x['path'] for ok, x in results if ok]
@@ -33,7 +35,10 @@ class MeiziPipeline(ImagesPipeline):
 
     def file_path(self, request, response=None, info=None):
         item = request.meta['item']
-        image_guid = '_'.join(request.url.split('/')[-3:])
-        filename = u'{0[tags]}/{1}'.format(item, image_guid)
-        filename_strip = strip(filename)
-        return filename_strip
+        image_guid = '_'.join(request.url.split('/')[-3:])  # 图片的保存名
+        fold_name = strip(item['tags'].strip())  # 文件夹名
+        fold_path = u'{0}/{1}'.format(IMAGES_STORE, fold_name)  # 完整路径
+        if not os.path.exists(fold_path):
+            os.makedirs(fold_path)
+        filename = u'{0}/{1}'.format(fold_path, image_guid)
+        return filename
